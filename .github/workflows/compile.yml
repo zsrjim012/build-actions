@@ -2,7 +2,7 @@
 #
 # 此文件为编译文件,一般情况下不使用这个来启动,运行build-openwrt.yml会自动触发编译
 #
-# 如果自动触发挂了的情况下，可以在这里选择好机型，选择compile.yml启动编译
+# 如果自动触发挂了的情况下，可以在这里选择好机型，选择 compile 启动编译
 #
 # REPO_TOKEN密匙制作教程：https://git.io/jm.md
 #
@@ -230,9 +230,6 @@ jobs:
         find -name "*manifest*" | xargs -i rm -rf {}
         find -name "*vmlinuz*" | xargs -i rm -rf {}
         find -name "*Image*" | xargs -i rm -rf {}
-        find -name "*generic-kernel.bin*" | xargs -i rm -rf {}
-        find -name "*generic-squashfs-combined-efi.img*" | xargs -i rm -rf {}
-        find -name "*generic-squashfs-rootfs.img*" | xargs -i rm -rf {}
         rm -rf packages
         rename -v "s/^openwrt/${{ env.date1 }}-${{ env.CODE }}/" *
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
