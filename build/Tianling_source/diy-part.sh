@@ -17,28 +17,25 @@ uci set network.lan.broadcast='192.168.2.255'                               # IP
 uci set network.lan.dns='114.114.114.114 223.5.5.5'                         # DNS(多个DNS要用空格分开)
 uci set network.lan.delegate='0'                                            # 去掉LAN口使用内置的 IPv6 管理
 uci commit network                                                          # 不要删除跟注释,除非上面全部删除或注释掉了
-#uci set dhcp.lan.ignore='1'                                                 # 关闭DHCP功能
-#uci commit dhcp                                                             # 跟‘关闭DHCP功能’联动,同时启用或者删除跟注释
+#uci set dhcp.lan.ignore='1'                                                 # 关闭DHCP功能（去掉uci前面的#生效）
+#uci commit dhcp                                                             # 跟‘关闭DHCP功能’联动,同时启用或者删除跟注释（去掉uci前面的#生效）
 uci set system.@system[0].hostname='OpenWrt-123'                            # 修改主机名称为OpenWrt-123
+#sed -i 's/\/bin\/login/\/bin\/login -f root/' /etc/config/ttyd              # 设置ttyd免帐号登录，如若开启，进入OPENWRT后可能要重启一次才生效（去掉uci前面的#生效）
 EOF
-
-
-sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile            # 选择argon为默认主题
 
 sed -i "s/OpenWrt /${Author} Compiled in $(TZ=UTC-8 date "+%Y.%m.%d") @ OpenWrt /g" $ZZZ           # 增加个性名字${Author}默认为你的github账号
 
 sed -i '/CYXluq4wUazHjmCDBCqXF/d' $ZZZ                                                             # 设置密码为空
 
-#sed -i 's/PATCHVER:=4.19/PATCHVER:=4.14/g' target/linux/x86/Makefile                               # x86机型,默认内核4.19，修改内核为4.14或者4.9
+#sed -i 's/PATCHVER:=4.19/PATCHVER:=4.14/g' target/linux/x86/Makefile                               # x86机型,默认内核4.19，修改内核为4.14（去掉sed前面的#生效）
 
 
-# K3专用，编译K3的时候只会出K3固件
+# K3专用，编译K3的时候只会出K3固件（去掉sed前面的#生效）
 #sed -i 's|^TARGET_|# TARGET_|g; s|# TARGET_DEVICES += phicomm-k3|TARGET_DEVICES += phicomm-k3|' target/linux/bcm53xx/image/Makefile
 
 
-# 在线更新时，删除不想保留固件的某个文件，在EOF跟EOF直接加入删除代码，记住这里对应的是固件的文件路径，比如： rm /etc/config/luci
+# 在线更新时，删除不想保留固件的某个文件，在EOF跟EOF之间加入删除代码，记住这里对应的是固件的文件路径，比如： rm /etc/config/luci
 cat >$DELETE <<-EOF
-
 EOF
 
 
@@ -53,3 +50,15 @@ sed -i 's/"USB 打印服务器"/"打印服务"/g' `grep "USB 打印服务器" -r
 sed -i 's/"Web 管理"/"Web"/g' `grep "Web 管理" -rl ./`
 sed -i 's/"管理权"/"改密码"/g' `grep "管理权" -rl ./`
 sed -i 's/"Argon 主题设置"/"Argon设置"/g' `grep "Argon 主题设置" -rl ./`
+
+
+# 整理固件包时候,删除您不想要的固件或者文件,让它不需要上传到Actions空间
+cat >${GITHUB_WORKSPACE}/Clear <<-EOF
+rm -rf config.buildinfo
+rm -rf feeds.buildinfo
+rm -rf openwrt-x86-64-generic-kernel.bin
+rm -rf openwrt-x86-64-generic.manifest
+rm -rf openwrt-x86-64-generic-squashfs-rootfs.img.gz
+rm -rf sha256sums
+rm -rf version.buildinfo
+EOF
